@@ -1,0 +1,30 @@
+{
+  "name": "child_pty",
+  "version": "0.1.0",
+  "description": "provides a child_process.spawn()-like interface with pty support.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "install": "node-gyp rebuild"
+  },
+  "author": "Enno Boland <eb@s01.de>",
+  "license": "MIT",
+  "dependencies": {
+    "extend": "^2.0.0",
+    "nan": "^1.4.1"
+  },
+  "gypfile": true,
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Gottox/child_pty"
+  },
+  "keywords": [
+    "pty",
+    "terminal"
+  ],
+  "bugs": {
+    "url": "https://github.com/Gottox/child_pty/issues"
+  },
+  "homepage": "https://github.com/Gottox/child_pty"
+}
