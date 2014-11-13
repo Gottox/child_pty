@@ -27,3 +27,10 @@ differences:
 
 * child processes won't get an EOF once you close stdin. You have to call
   ```ChildProcess#kill``` explicitly.
+
+* ```ChildProcess``` emits a 'resize' event when the pty is resized.
+
+Examples
+--------
+
+See [terminal.js-webshell](http://github.com/Gottox/terminal.js-webshell)
