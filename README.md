@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/Gottox/child_pty.png)](https://travis-ci.org/Gottox/child_pty)
 
-
 child_pty
 =========
 
@@ -35,5 +34,16 @@ differences:
 
 Examples
 --------
+
+This example opens a pty with ```/bin/sh``` does an ls -l and
+exits the shell.
+
+```javascript
+var child_pty = require('child_pty');
+var child = child_pty.spawn('/bin/sh', []);
+child.stdout.pipe(process.stdout);
+child.stdin.write('ls -l\n');
+child.stdin.write('exit\n');
+```
 
 See [terminal.js-webshell](http://github.com/Gottox/terminal.js-webshell)
