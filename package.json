@@ -14,7 +14,9 @@
     "nan": "^1.4.1"
   },
   "gypfile": true,
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "^2.0.1"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/Gottox/child_pty"
