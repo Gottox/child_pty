@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "0.11"
+  - "0.10"
+  - "0.8"
+  - "0.6"
+notifications:
+  irc:
+      channels:
+          - "chat.freenode.net#terminal.js"
+      skip_join: true
+      use_notice: true
