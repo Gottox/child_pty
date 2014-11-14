@@ -29,5 +29,12 @@
   "bugs": {
     "url": "https://github.com/Gottox/child_pty/issues"
   },
-  "homepage": "https://github.com/Gottox/child_pty"
+  "homepage": "https://github.com/Gottox/child_pty",
+
+  "jshintConfig": {
+    "unused": true,
+	"eqeqeq": true,
+	"quotmark": true,
+	"nonew": true
+  }
 }
