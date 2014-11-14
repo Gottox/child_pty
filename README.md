@@ -1,6 +1,5 @@
-<div style="float: right">
-    <img src="https://travis-ci.org/Gottox/child_pty.png" alt="Build Status"/>
-</div>
+[![Build Status](https://travis-ci.org/Gottox/child_pty.png)](https://travis-ci.org/Gottox/child_pty.js)
+
 
 child_pty
 =========
