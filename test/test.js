@@ -1,5 +1,5 @@
 var assert = require("assert");
-var child_pty = require("child_pty");
+var child_pty = require("../index");
 
 describe('child_pty.spawn()', function(){
 	var child;
