@@ -1,3 +1,7 @@
+<div style="float: right">
+    <img src="https://travis-ci.org/Gottox/child_pty.png" alt="Build Status"/>
+</div>
+
 child_pty
 =========
 
