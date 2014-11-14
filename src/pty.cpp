@@ -1,10 +1,3 @@
-/*
- * pty.cpp
- * Copyright (C) 2014 tox <tox@rootkit>
- *
- * Distributed under terms of the MIT license.
- */
-
 #include <nan.h>
 #include <errno.h>
 #if   defined(__linux)
@@ -15,11 +8,9 @@
 #	include <libutil.h>
 #endif
 
-using namespace v8;
-
-void mkwinsize(struct winsize *w, Handle<Value> size) {
-	w->ws_row = size->ToObject()->Get(NanNew<String>("rows"))->Uint32Value();
-	w->ws_col = size->ToObject()->Get(NanNew<String>("colums"))->Uint32Value();
+void mkwinsize(struct winsize *w, v8::Handle<v8::Value> size) {
+	w->ws_row = size->ToObject()->Get(NanNew<v8::String>("rows"))->Uint32Value();
+	w->ws_col = size->ToObject()->Get(NanNew<v8::String>("colums"))->Uint32Value();
 	w->ws_xpixel = 0;
 	w->ws_ypixel = 0;
 }
@@ -31,9 +22,9 @@ NAN_METHOD(Open) {
 	mkwinsize(&w, args[0]);
 	if(openpty(&master, &slave, NULL, NULL, &w) < 0)
 		NanThrowError(strerror(errno));
-	Handle<Object> ret = NanNew<Object>();
-	ret->Set(NanNew<String>("master"), NanNew<Integer>(master));
-	ret->Set(NanNew<String>("slave"), NanNew<Integer>(slave));
+	v8::Handle<v8::Object> ret = NanNew<v8::Object>();
+	ret->Set(NanNew<v8::String>("master"), NanNew<v8::Integer>(master));
+	ret->Set(NanNew<v8::String>("slave"), NanNew<v8::Integer>(slave));
 	NanReturnValue(ret);
 }
 
@@ -46,11 +37,9 @@ NAN_METHOD(Resize) {
 	NanReturnUndefined();
 }
 
-void Init(Handle<Object> exports) {
-	exports->Set(NanNew<String>("open"),
-			NanNew<FunctionTemplate>(Open)->GetFunction());
-	exports->Set(NanNew<String>("resize"),
-			NanNew<FunctionTemplate>(Resize)->GetFunction());
+void Init(v8::Handle<v8::Object> exports) {
+	NODE_SET_METHOD(exports, "open", Open);
+	NODE_SET_METHOD(exports, "resize", Resize);
 }
 
 NODE_MODULE(pty, Init)
