@@ -1,10 +1,10 @@
-var assert = require("assert")
+var assert = require("assert");
 var child_pty = require("child_pty");
 
 describe('child_pty.spawn()', function(){
 	var child;
 	function spawn_client() {
-		return child = child_pty.spawn(process.argv[0],
+		child = child_pty.spawn(process.argv[0],
 			Array.prototype.concat.apply([ __dirname + "/libexec/client.js"],
 			   arguments));
 	}
@@ -21,7 +21,7 @@ describe('child_pty.spawn()', function(){
 		var d = "";
 
 		child.stdout.on('data', function(data) {
-			d += data.toString()
+			d += data.toString();
 		});
 
 		child.on('exit', function() {
@@ -79,5 +79,5 @@ describe('child_pty.spawn()', function(){
 	});
 	afterEach(function(){
 		child.kill();
-	})
-})
+	});
+});

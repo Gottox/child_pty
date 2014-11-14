@@ -4,7 +4,7 @@
   "description": "provides a child_process.spawn()-like interface with pty support.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "jshint lib test && mocha",
     "install": "node-gyp rebuild"
   },
   "author": "Enno Boland <eb@s01.de>",
@@ -15,6 +15,7 @@
   },
   "gypfile": true,
   "devDependencies": {
+    "jshint": "^2.5.10",
     "mocha": "^2.0.1"
   },
   "repository": {
