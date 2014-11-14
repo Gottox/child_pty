@@ -10,7 +10,7 @@
   "author": "Enno Boland <eb@s01.de>",
   "license": "MIT",
   "dependencies": {
-    "extend": "^2.0.0",
+    "extend": "^1.0.0",
     "nan": "^1.4.1"
   },
   "gypfile": true,
