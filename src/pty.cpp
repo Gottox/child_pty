@@ -15,6 +15,15 @@ void mkwinsize(struct winsize *w, v8::Handle<v8::Value> size) {
 	w->ws_ypixel = 0;
 }
 
+NAN_METHOD(Resize) {
+	struct winsize w;
+	NanScope();
+	mkwinsize(&w, args[0]);
+	if(ioctl(args.This()->Get(NanNew<v8::String>("master"))->Uint32Value(), TIOCSWINSZ, &w) < 0)
+		return NanThrowError("ioctl failed");
+	NanReturnUndefined();
+}
+
 NAN_METHOD(Open) {
 	struct winsize w;
 	int master, slave;
@@ -25,21 +34,12 @@ NAN_METHOD(Open) {
 	v8::Handle<v8::Object> ret = NanNew<v8::Object>();
 	ret->Set(NanNew<v8::String>("master"), NanNew<v8::Integer>(master));
 	ret->Set(NanNew<v8::String>("slave"), NanNew<v8::Integer>(slave));
+	NODE_SET_METHOD(ret, "resize", Resize);
 	NanReturnValue(ret);
-}
-
-NAN_METHOD(Resize) {
-	struct winsize w;
-	NanScope();
-	mkwinsize(&w, args[1]);
-	if(ioctl(args[0]->Uint32Value(), TIOCSWINSZ, &w) < 0)
-		return NanThrowError("ioctl failed");
-	NanReturnUndefined();
 }
 
 void Init(v8::Handle<v8::Object> exports) {
 	NODE_SET_METHOD(exports, "open", Open);
-	NODE_SET_METHOD(exports, "resize", Resize);
 }
 
 NODE_MODULE(pty, Init)
