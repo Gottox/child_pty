@@ -3,6 +3,7 @@
 #if   defined(__linux)
 #	include <pty.h>
 #elif defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
+#	include <sys/ioctl.h>
 #	include <util.h>
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
 #	include <libutil.h>
