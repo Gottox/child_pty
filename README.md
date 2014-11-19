@@ -46,4 +46,8 @@ child.stdin.write('ls -l\n');
 child.stdin.write('exit\n');
 ```
 
-See [terminal.js-webshell](http://github.com/Gottox/terminal.js-webshell)
+Changelog
+---------
+
+* v0.1.0 - initial release
+* v0.2.0 - fix job control for shells
