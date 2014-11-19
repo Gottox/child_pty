@@ -7,6 +7,8 @@ child_pty is a module for creating and interacting with pseudo terminals. It
 tries to be as minimal as possible and borrows most of its functionality from
 child_process.
 
+child_pty was written as a replacement for [pty.js](https://github.com/chjj/pty.js/).
+
 API
 ---
 
