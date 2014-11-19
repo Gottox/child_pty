@@ -9,5 +9,12 @@
 		'libraries': [
 			'-lutil',
 		],
+	},{
+		'target_name': 'exechelper',
+		'type': 'executable',
+		'sources': [
+			'src/exechelper.cpp',
+		],
+
 	}]
 }
