@@ -1,11 +1,10 @@
 {
   "name": "child_pty",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "provides a child_process.spawn()-like interface with pty support.",
   "main": "index.js",
   "scripts": {
-    "test": "jshint lib test && mocha",
-    "install": "node-gyp rebuild"
+    "test": "jshint lib test && mocha"
   },
   "author": "Enno Boland <eb@s01.de>",
   "license": "MIT",
