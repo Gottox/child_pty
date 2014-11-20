@@ -19,17 +19,17 @@ differences:
 * Only ```child_pty.spawn()``` is supported
 
 * The ```options``` argument of child_pty.spawn() has the following changes:
-  * new field: ```options.columns```: columns of the instanciated pty.
-  * new field: ```options.rows```: rows of the instanciated pty.
-  * ```options.detached``` and ```options.stdio``` are ignored
+  * new field: ```options.columns```: columns of the instanciated PTY.
+  * new field: ```options.rows```: rows of the instanciated PTY.
+  * ```options.detached``` and ```options.stdio``` are ignored.
 
 * ChildProcess in child_pty vs ChildProcess in child_process:
   * ```#stderr``` is not available. Use ```#stdout``` instead.
 
-  * There's ```#stdout.resize(size)``` to resize the underlying pty.
-    The size attribute shoud have the following fields:
-    * ```size.columns```: columns of the instanciated pty.
-    * ```size.rows```: rows of the instanciated pty.
+  * There's ```#stdout.resize(size)``` to resize the underlying PTY.
+    The size attribute should have the following fields:
+    * ```size.columns```: columns of the instanciated PTY.
+    * ```size.rows```: rows of the instanciated PTY.
 
   * child processes won't get an EOF once you close stdin. You have to call
     ```ChildProcess#kill()``` explicitly.
@@ -37,7 +37,7 @@ differences:
 Examples
 --------
 
-This example opens a pty with ```/bin/sh```, resizes the terminal, executes
+This example opens a PTY with ```/bin/sh```, resizes the terminal, executes
 ```ls -l```, and exits the shell.
 
 ```javascript
