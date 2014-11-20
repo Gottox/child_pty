@@ -31,7 +31,7 @@ NAN_METHOD(Open) {
 	NanScope();
 	mkwinsize(&w, args[0]);
 	if(openpty(&master, &slave, NULL, NULL, &w) < 0)
-		NanThrowError(strerror(errno));
+		return NanThrowError(strerror(errno));
 	v8::Handle<v8::Object> ret = NanNew<v8::Object>();
 	ret->Set(NanNew<v8::String>("master"), NanNew<v8::Integer>(master));
 	ret->Set(NanNew<v8::String>("slave"), NanNew<v8::Integer>(slave));
