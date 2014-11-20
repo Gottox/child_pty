@@ -42,8 +42,11 @@ exits the shell.
 
 ```javascript
 var child_pty = require('child_pty');
-var child = child_pty.spawn('/bin/sh', []);
+var child = child_pty.spawn('/bin/sh', [], {
+	size: { rows: 30, columns: 80 }
+});
 child.stdout.pipe(process.stdout);
+child.resize({rows: 25, columns: 80 });
 child.stdin.write('ls -l\n');
 child.stdin.write('exit\n');
 ```
@@ -51,5 +54,5 @@ child.stdin.write('exit\n');
 Changelog
 ---------
 
-* v0.1.0 - initial release
-* v0.2.0 - fix job control for shells
+* v0.1 - initial release
+* v0.2 - fix job control for shells
