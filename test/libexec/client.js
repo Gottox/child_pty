@@ -4,8 +4,10 @@ for(var i = 0; i < process.argv.length; i++) {
 }
 
 if(args.sigwinch)
-	process.on('SIGWINCH', function() {
-		process.stdout.write('sigwinch\n');
+	process.stdout.on('resize', function() {
+		process.stdout.write('sigwinch '+
+			process.stdout.columns+
+			' '+process.stdout.rows+'\n');
 	});
 
 if(args.print)

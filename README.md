@@ -18,35 +18,36 @@ differences:
 
 * Only ```child_pty.spawn()``` is supported
 
-* The ```options``` argument of child_pty.spawn() supports a ```size``` field
-  which must contain the following:
-  * ```size.columns```: columns of the instanciated pty.
-  * ```size.rows```: rows of the instanciated pty.
-  
-* ```ChildProcess#stderr``` is not available. Use ```ChildProcess#stdout```
-  instead
+* The ```options``` argument of child_pty.spawn() has the following changes:
+  * new field: ```options.columns```: columns of the instanciated pty.
+  * new field: ```options.rows```: rows of the instanciated pty.
+  * ```options.detached``` and ```options.stdio``` are ignored
 
-* There's a ```ChildProcess#resize()``` function which will take a size-object
-  described above.
+* ChildProcess in child_pty vs ChildProcess in child_process:
+  * ```#stderr``` is not available. Use ```#stdout``` instead.
 
-* child processes won't get an EOF once you close stdin. You have to call
-  ```ChildProcess#kill``` explicitly.
+  * There's ```#stdout.resize(size)``` to resize the underlying pty.
+    The size attribute shoud have the following fields:
+    * ```size.columns```: columns of the instanciated pty.
+    * ```size.rows```: rows of the instanciated pty.
 
-* ```ChildProcess``` emits a 'resize' event when the pty is resized.
+  * child processes won't get an EOF once you close stdin. You have to call
+    ```ChildProcess#kill()``` explicitly.
 
 Examples
 --------
 
-This example opens a pty with ```/bin/sh``` does an ls -l and
-exits the shell.
+This example opens a pty with ```/bin/sh```, resizes the terminal, executes
+```ls -l```, and exits the shell.
 
 ```javascript
 var child_pty = require('child_pty');
-var child = child_pty.spawn('/bin/sh', [], {
-	size: { rows: 30, columns: 80 }
-});
-child.stdout.pipe(process.stdout);
-child.resize({rows: 25, columns: 80 });
+var child = child_pty.spawn('/bin/sh', []);
+child.stdout.on('resize', function() {
+	console.log('New columns: ' + this.columns);
+	console.log('New rows:    ' + this.rows);
+}).pipe(process.stdout);
+child.stdout.resize({ columns: 80, rows: 48 });
 child.stdin.write('ls -l\n');
 child.stdin.write('exit\n');
 ```
@@ -56,3 +57,4 @@ Changelog
 
 * v0.1 - initial release
 * v0.2 - fix job control for shells
+* v0.3 - API changes to fit child_process
