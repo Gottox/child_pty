@@ -58,3 +58,5 @@ Changelog
 * v0.1 - initial release
 * v0.2 - fix job control for shells
 * v0.3 - API changes to fit child_process
+* v0.4 - remove deprecated APIs
+* v0.5 - MacOS support
