@@ -20,7 +20,7 @@
 
 static void
 makews(struct winsize *w, v8::Handle<v8::Value> size) {
-	v8::Handle<v8::String> columns = NanNew<v8::String>("colums"),
+	v8::Handle<v8::String> columns = NanNew<v8::String>("columns"),
 		rows = NanNew<v8::String>("rows");
 	w->ws_row = 24;
 	w->ws_col = 80;
