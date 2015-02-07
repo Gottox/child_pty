@@ -46,7 +46,7 @@ NAN_METHOD(Resize) {
 	makews(&w, args[1]);
 	v8::Handle<v8::Object> obj = args[0]->ToObject();
 	if(ioctl(obj->Get(NanNew<v8::String>("master_fd"))->Uint32Value(), TIOCSWINSZ, &w) < 0)
-		return NanThrowError("ioctl failed");
+		return NanThrowError(strerror(errno));
 	applyws(&w, obj);
 	NanReturnUndefined();
 }
