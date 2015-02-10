@@ -59,6 +59,10 @@ NAN_METHOD(Open) {
 	makews(&w, args[0]);
 	if(openpty(&master, &slave, NULL, NULL, &w) < 0)
 		return NanThrowError(strerror(errno));
+	char *tty = ttyname(slave);
+	if (NULL == tty)
+		return NanThrowError("Could not get ttyname");
+	obj->Set(NanNew<v8::String>("ttyname"), NanNew<v8::String>(tty));
 	obj->Set(NanNew<v8::String>("master_fd"), NanNew<v8::Integer>(master));
 	obj->Set(NanNew<v8::String>("slave_fd"), NanNew<v8::Integer>(slave));
 	applyws(&w, obj);
