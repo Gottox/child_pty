@@ -2,6 +2,7 @@
 #include <errno.h>
 #if   defined(__linux)
 #	include <pty.h>
+#	include <unistd.h>
 #elif defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
 #	include <sys/ioctl.h>
 /*
