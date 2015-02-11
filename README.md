@@ -31,11 +31,8 @@ differences:
     * ```size.columns```: columns of the instanciated PTY.
     * ```size.rows```: rows of the instanciated PTY.
 
-  * There's a ``#term`` object with the following properties:
-    * `#master_fd` master file descriptor int
-    * `#slave_fd` master file descriptor int
-    * ``#ttyname`: name of the underlying TTY as reported by
-      ``ttyname()`` (eg: ``/dev/ttys016``).
+  * There's a ``#stdout.ttyname`` property with the name of the tty (eg:
+    ``/dev/ttys016``)
 
   * child processes won't get an EOF once you close stdin. You have to call
     ```ChildProcess#kill()``` explicitly.
