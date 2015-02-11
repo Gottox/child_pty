@@ -83,6 +83,12 @@ describe('child_pty.spawn()', function(){
 		});
 	});
 
+	it('should have ttyname', function() {
+		spawn_client();
+
+		assert.equal(typeof child.stdout.ttyname, 'string');
+	});
+
 	afterEach(function(){
 		child.kill();
 	});
