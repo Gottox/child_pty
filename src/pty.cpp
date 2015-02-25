@@ -55,14 +55,13 @@ NAN_METHOD(Resize) {
 NAN_METHOD(Open) {
 	struct winsize w;
 	int master, slave;
+	char *tty;
 	NanScope();
 	v8::Handle<v8::Object> obj = NanNew<v8::Object>();
 	makews(&w, args[0]);
-	if(openpty(&master, &slave, NULL, NULL, &w) < 0)
+	if(openpty(&master, &slave, NULL, NULL, &w) < 0 ||
+			(tty = ttyname(slave)) == NULL)
 		return NanThrowError(strerror(errno));
-	char *tty = ttyname(slave);
-	if (NULL == tty)
-		return NanThrowError("Could not get ttyname");
 	obj->Set(NanNew<v8::String>("ttyname"), NanNew<v8::String>(tty));
 	obj->Set(NanNew<v8::String>("master_fd"), NanNew<v8::Integer>(master));
 	obj->Set(NanNew<v8::String>("slave_fd"), NanNew<v8::Integer>(slave));
