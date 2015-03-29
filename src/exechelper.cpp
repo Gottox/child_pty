@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) {
 	if(argc < 2) {
-		fputs("usage: exechelper COMMAND ARGUMENTS...", stderr);
+		fputs("usage: exechelper COMMAND ARGUMENTS...\n", stderr);
 	} else if(ioctl(STDIN_FILENO, TIOCSCTTY, NULL) < 0) {
 		perror("ioctl TIOCSCTTY");
 	} else {
