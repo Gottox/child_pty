@@ -63,3 +63,4 @@ Changelog
 * v0.3 - API changes to fit child_process
 * v0.4 - remove deprecated APIs
 * v0.5 - MacOS support
+* v1.0 - Exposes TTY name to the API
