@@ -73,11 +73,31 @@ NAN_METHOD(Open) {
 }
 
 NAN_METHOD(Setattr) {
-
+	struct termios tios;
+	NanScope();
+	v8::Handle<v8::Object> obj = args[2]->ToObject();
+	tios.c_iflag = obj->Get(NanNew<v8::String>("iflags"))->Uint32Value();
+	tios.c_oflag = obj->Get(NanNew<v8::String>("oflags"))->Uint32Value();
+	tios.c_cflag = obj->Get(NanNew<v8::String>("cflags"))->Uint32Value();
+	tios.c_lflag = obj->Get(NanNew<v8::String>("lflags"))->Uint32Value();
+	if(tcsetattr(args[0]->ToObject()->Get(NanNew<v8::String>("master_fd"))->Uint32Value(),
+				args[1]->Uint32Value(), &tios) < 0)
+		return NanThrowError(strerror(errno));
+	NanReturnUndefined();
 }
 
 NAN_METHOD(Getattr) {
-
+	struct termios tios;
+	NanScope();
+	if(tcgetattr(args[0]->ToObject()->Get(NanNew<v8::String>("master_fd"))->Uint32Value(),
+				&tios) < 0)
+		return NanThrowError(strerror(errno));
+	v8::Handle<v8::Object> obj = NanNew<v8::Object>();
+	obj->Set(NanNew<v8::String>("iflags"), NanNew<v8::Integer>(tios.c_iflag));
+	obj->Set(NanNew<v8::String>("oflags"), NanNew<v8::Integer>(tios.c_oflag));
+	obj->Set(NanNew<v8::String>("cflags"), NanNew<v8::Integer>(tios.c_cflag));
+	obj->Set(NanNew<v8::String>("lflags"), NanNew<v8::Integer>(tios.c_lflag));
+	NanReturnValue(obj);
 }
 
 void Init(v8::Handle<v8::Object> exports) {
@@ -85,6 +105,10 @@ void Init(v8::Handle<v8::Object> exports) {
 	NODE_SET_METHOD(exports, "resize", Resize);
 	NODE_SET_METHOD(exports, "setattr", Setattr);
 	NODE_SET_METHOD(exports, "getattr", Getattr);
+
+	EXPORT_SYMBOL(exports, TCSANOW);
+	EXPORT_SYMBOL(exports, TCSADRAIN);
+	EXPORT_SYMBOL(exports, TCSAFLUSH);
 
 	v8::Handle<v8::Object> modes = NanNew<v8::Object>();
 
