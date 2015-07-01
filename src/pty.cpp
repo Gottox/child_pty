@@ -3,6 +3,7 @@
 #if   defined(__linux)
 #	include <pty.h>
 #	include <unistd.h>
+#	include <termios.h>
 #elif defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
 #	include <sys/ioctl.h>
 /*
@@ -18,6 +19,8 @@
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
 #	include <libutil.h>
 #endif
+
+#define EXPORT_SYMBOL(o, s) o->Set(NanNew<v8::String>(#s), NanNew<v8::Integer>(s));
 
 static void
 makews(struct winsize *w, v8::Handle<v8::Value> size) {
@@ -69,9 +72,78 @@ NAN_METHOD(Open) {
 	NanReturnValue(obj);
 }
 
+NAN_METHOD(Setattr) {
+
+}
+
+NAN_METHOD(Getattr) {
+
+}
+
 void Init(v8::Handle<v8::Object> exports) {
 	NODE_SET_METHOD(exports, "open", Open);
 	NODE_SET_METHOD(exports, "resize", Resize);
+	NODE_SET_METHOD(exports, "setattr", Setattr);
+	NODE_SET_METHOD(exports, "getattr", Getattr);
+
+	v8::Handle<v8::Object> modes = NanNew<v8::Object>();
+
+	/* Input Modes */
+	EXPORT_SYMBOL(modes, IGNBRK);  /* ignore BREAK condition */
+	EXPORT_SYMBOL(modes, BRKINT);  /* map BREAK to SIGINT */
+	EXPORT_SYMBOL(modes, IGNPAR);  /* ignore (discard) parity errors */
+	EXPORT_SYMBOL(modes, PARMRK);  /* mark parity and framing errors */
+	EXPORT_SYMBOL(modes, INPCK);   /* enable checking of parity errors */
+	EXPORT_SYMBOL(modes, ISTRIP);  /* strip 8th bit off chars */
+	EXPORT_SYMBOL(modes, INLCR);   /* map NL into CR */
+	EXPORT_SYMBOL(modes, IGNCR);   /* ignore CR */
+	EXPORT_SYMBOL(modes, ICRNL);   /* map CR to NL (ala CRMOD) */
+	EXPORT_SYMBOL(modes, IXON);    /* enable output flow control */
+	EXPORT_SYMBOL(modes, IXOFF);   /* enable input flow control */
+	EXPORT_SYMBOL(modes, IXANY);   /* any char will restart after stop */
+	EXPORT_SYMBOL(modes, IMAXBEL); /* ring bell on input queue full */
+	EXPORT_SYMBOL(modes, IUCLC);   /* translate upper case to lower case */
+
+	/* Output Modes */
+	EXPORT_SYMBOL(modes, OPOST);   /* enable following output processing */
+	EXPORT_SYMBOL(modes, ONLCR);   /* map NL to CR-NL (ala CRMOD) */
+	EXPORT_SYMBOL(modes, OCRNL);   /* map CR to NL */
+	EXPORT_SYMBOL(modes, OLCUC);   /* translate lower case to upper case */
+	EXPORT_SYMBOL(modes, ONOCR);   /* No CR output at column 0 */
+	EXPORT_SYMBOL(modes, ONLRET);  /* NL performs the CR function */
+
+	/* Control Modes */
+	EXPORT_SYMBOL(modes, CSIZE);   /* character size mask */
+	EXPORT_SYMBOL(modes, CS5);     /* 5 bits (pseudo) */
+	EXPORT_SYMBOL(modes, CS6);     /* 6 bits */
+	EXPORT_SYMBOL(modes, CS7);     /* 7 bits */
+	EXPORT_SYMBOL(modes, CS8);     /* 8 bits */
+	EXPORT_SYMBOL(modes, CSTOPB);  /* send 2 stop bits */
+	EXPORT_SYMBOL(modes, CREAD);   /* enable receiver */
+	EXPORT_SYMBOL(modes, PARENB);  /* parity enable */
+	EXPORT_SYMBOL(modes, PARODD);  /* odd parity, else even */
+	EXPORT_SYMBOL(modes, HUPCL);   /* hang up on last close */
+	EXPORT_SYMBOL(modes, CLOCAL);  /* ignore modem status lines */
+
+	/* Local Modes */
+	EXPORT_SYMBOL(modes, ECHOKE);  /* visual erase for line kill */
+	EXPORT_SYMBOL(modes, ECHOE);   /* visually erase chars */
+	EXPORT_SYMBOL(modes, ECHOK);   /* echo NL after line kill */
+	EXPORT_SYMBOL(modes, ECHO);    /* enable echoing */
+	EXPORT_SYMBOL(modes, ECHONL);  /* echo NL even if ECHO is off */
+	EXPORT_SYMBOL(modes, ECHOPRT); /* visual erase mode for hardcopy */
+	EXPORT_SYMBOL(modes, ECHOCTL); /* echo control chars as ^(Char) */
+	EXPORT_SYMBOL(modes, ISIG);    /* enable signals INTR, QUIT, [D]SUSP */
+	EXPORT_SYMBOL(modes, ICANON);  /* canonicalize input lines */
+	EXPORT_SYMBOL(modes, IEXTEN);  /* enable DISCARD and LNEXT */
+	EXPORT_SYMBOL(modes, EXTPROC); /* external processing */
+	EXPORT_SYMBOL(modes, TOSTOP);  /* stop background jobs from output */
+	EXPORT_SYMBOL(modes, FLUSHO);  /* output being flushed (state) */
+	EXPORT_SYMBOL(modes, PENDIN);  /* XXX retype pending input (state) */
+	EXPORT_SYMBOL(modes, NOFLSH);  /* don't flush after interrupt */
+	EXPORT_SYMBOL(modes, XCASE);   /* canonical upper/lower case */
+
+	exports->Set(NanNew<v8::String>("modes"), modes);
 }
 
 NODE_MODULE(pty, Init)
