@@ -64,3 +64,4 @@ Changelog
 * v0.4 - remove deprecated APIs
 * v0.5 - MacOS support
 * v1.0 - Exposes TTY name to the API
+* v1.1 - Exposes tcgetattr/tcsetattr functions
