@@ -67,11 +67,7 @@ describe('child_pty.spawn()', function(){
 		spawn_client('print', 'echo', 'sigwinch');
 
 		child.stdout.once('data', function(data) {
-			if(data.toString() !== 'print\r\n') {
-				assert.ok(false, 'received wrong data');
-				child.kill();
-				return done();
-			}
+			assert.equal('print', data.toString().trim());
 			child.stdout.resize({ columns:80, rows: 80 });
 			child.stdout.once('data', function(data) {
 				assert.equal('sigwinch '+this.columns+' '+this.rows+'\r\n', data.toString());
