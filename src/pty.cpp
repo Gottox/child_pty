@@ -60,7 +60,7 @@ NAN_METHOD(Open) {
 	int master, slave;
 	char *tty;
 	Nan::HandleScope scope;
-	v8::Handle<v8::Object> obj = Nan::New<v8::Object>();
+	v8::Local<v8::Object> obj = Nan::New<v8::Object>();
 	makews(&w, info[0]);
 	if(openpty(&master, &slave, NULL, NULL, &w) < 0 ||
 			(tty = ttyname(slave)) == NULL)
@@ -75,7 +75,7 @@ NAN_METHOD(Open) {
 NAN_METHOD(Setattr) {
 	struct termios tios;
 	Nan::HandleScope scope;
-	v8::Handle<v8::Object> obj = info[2]->ToObject();
+	v8::Local<v8::Object> obj = info[2]->ToObject();
 	tios.c_iflag = obj->Get(Nan::New<v8::String>("iflags").ToLocalChecked())->Uint32Value();
 	tios.c_oflag = obj->Get(Nan::New<v8::String>("oflags").ToLocalChecked())->Uint32Value();
 	tios.c_cflag = obj->Get(Nan::New<v8::String>("cflags").ToLocalChecked())->Uint32Value();
@@ -92,7 +92,7 @@ NAN_METHOD(Getattr) {
 	if(tcgetattr(info[0]->ToObject()->Get(Nan::New<v8::String>("master_fd").ToLocalChecked())->Uint32Value(),
 				&tios) < 0)
 		return Nan::ThrowError(strerror(errno));
-	v8::Handle<v8::Object> obj = Nan::New<v8::Object>();
+	v8::Local<v8::Object> obj = Nan::New<v8::Object>();
 	obj->Set(Nan::New<v8::String>("iflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_iflag));
 	obj->Set(Nan::New<v8::String>("oflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_oflag));
 	obj->Set(Nan::New<v8::String>("cflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_cflag));
