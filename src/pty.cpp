@@ -20,12 +20,12 @@
 #	include <libutil.h>
 #endif
 
-#define EXPORT_SYMBOL(o, s) o->Set(NanNew<v8::String>(#s), NanNew<v8::Integer>(s));
+#define EXPORT_SYMBOL(o, s) o->Set(Nan::New<v8::String>(#s).ToLocalChecked(), Nan::New<v8::Number>(s));
 
 static void
 makews(struct winsize *w, v8::Handle<v8::Value> size) {
-	v8::Handle<v8::String> columns = NanNew<v8::String>("columns"),
-		rows = NanNew<v8::String>("rows");
+	v8::Handle<v8::String> columns = Nan::New<v8::String>("columns").ToLocalChecked(),
+		rows = Nan::New<v8::String>("rows").ToLocalChecked();
 	w->ws_row = 24;
 	w->ws_col = 80;
 	w->ws_xpixel = w->ws_ypixel = 0;
@@ -40,77 +40,77 @@ makews(struct winsize *w, v8::Handle<v8::Value> size) {
 
 static void
 applyws(struct winsize *w, v8::Handle<v8::Object> obj) {
-	obj->Set(NanNew<v8::String>("rows"), NanNew<v8::Integer>(w->ws_row));
-	obj->Set(NanNew<v8::String>("columns"), NanNew<v8::Integer>(w->ws_col));
+	obj->Set(Nan::New<v8::String>("rows").ToLocalChecked(), Nan::New<v8::Integer>(w->ws_row));
+	obj->Set(Nan::New<v8::String>("columns").ToLocalChecked(), Nan::New<v8::Integer>(w->ws_col));
 }
 
 NAN_METHOD(Resize) {
 	struct winsize w;
-	NanScope();
-	makews(&w, args[1]);
-	v8::Handle<v8::Object> obj = args[0]->ToObject();
-	if(ioctl(obj->Get(NanNew<v8::String>("master_fd"))->Uint32Value(), TIOCSWINSZ, &w) < 0)
-		return NanThrowError(strerror(errno));
+	Nan::HandleScope scope;
+	makews(&w, info[1]);
+	v8::Handle<v8::Object> obj = info[0]->ToObject();
+	if(ioctl(obj->Get(Nan::New<v8::String>("master_fd").ToLocalChecked())->Uint32Value(), TIOCSWINSZ, &w) < 0)
+		return Nan::ThrowError(strerror(errno));
 	applyws(&w, obj);
-	NanReturnUndefined();
+	return;
 }
 
 NAN_METHOD(Open) {
 	struct winsize w;
 	int master, slave;
 	char *tty;
-	NanScope();
-	v8::Handle<v8::Object> obj = NanNew<v8::Object>();
-	makews(&w, args[0]);
+	Nan::HandleScope scope;
+	v8::Handle<v8::Object> obj = Nan::New<v8::Object>();
+	makews(&w, info[0]);
 	if(openpty(&master, &slave, NULL, NULL, &w) < 0 ||
 			(tty = ttyname(slave)) == NULL)
-		return NanThrowError(strerror(errno));
-	obj->Set(NanNew<v8::String>("ttyname"), NanNew<v8::String>(tty));
-	obj->Set(NanNew<v8::String>("master_fd"), NanNew<v8::Integer>(master));
-	obj->Set(NanNew<v8::String>("slave_fd"), NanNew<v8::Integer>(slave));
+		return Nan::ThrowError(strerror(errno));
+	obj->Set(Nan::New<v8::String>("ttyname").ToLocalChecked(), Nan::New<v8::String>(tty).ToLocalChecked());
+	obj->Set(Nan::New<v8::String>("master_fd").ToLocalChecked(), Nan::New<v8::Integer>(master));
+	obj->Set(Nan::New<v8::String>("slave_fd").ToLocalChecked(), Nan::New<v8::Integer>(slave));
 	applyws(&w, obj);
-	NanReturnValue(obj);
+	info.GetReturnValue().Set(obj);
 }
 
 NAN_METHOD(Setattr) {
 	struct termios tios;
-	NanScope();
-	v8::Handle<v8::Object> obj = args[2]->ToObject();
-	tios.c_iflag = obj->Get(NanNew<v8::String>("iflags"))->Uint32Value();
-	tios.c_oflag = obj->Get(NanNew<v8::String>("oflags"))->Uint32Value();
-	tios.c_cflag = obj->Get(NanNew<v8::String>("cflags"))->Uint32Value();
-	tios.c_lflag = obj->Get(NanNew<v8::String>("lflags"))->Uint32Value();
-	if(tcsetattr(args[0]->ToObject()->Get(NanNew<v8::String>("master_fd"))->Uint32Value(),
-				args[1]->Uint32Value(), &tios) < 0)
-		return NanThrowError(strerror(errno));
-	NanReturnUndefined();
+	Nan::HandleScope scope;
+	v8::Handle<v8::Object> obj = info[2]->ToObject();
+	tios.c_iflag = obj->Get(Nan::New<v8::String>("iflags").ToLocalChecked())->Uint32Value();
+	tios.c_oflag = obj->Get(Nan::New<v8::String>("oflags").ToLocalChecked())->Uint32Value();
+	tios.c_cflag = obj->Get(Nan::New<v8::String>("cflags").ToLocalChecked())->Uint32Value();
+	tios.c_lflag = obj->Get(Nan::New<v8::String>("lflags").ToLocalChecked())->Uint32Value();
+	if(tcsetattr(info[0]->ToObject()->Get(Nan::New<v8::String>("master_fd").ToLocalChecked())->Uint32Value(),
+				info[1]->Uint32Value(), &tios) < 0)
+		return Nan::ThrowError(strerror(errno));
+	return;
 }
 
 NAN_METHOD(Getattr) {
 	struct termios tios;
-	NanScope();
-	if(tcgetattr(args[0]->ToObject()->Get(NanNew<v8::String>("master_fd"))->Uint32Value(),
+	Nan::HandleScope scope;
+	if(tcgetattr(info[0]->ToObject()->Get(Nan::New<v8::String>("master_fd").ToLocalChecked())->Uint32Value(),
 				&tios) < 0)
-		return NanThrowError(strerror(errno));
-	v8::Handle<v8::Object> obj = NanNew<v8::Object>();
-	obj->Set(NanNew<v8::String>("iflags"), NanNew<v8::Integer>(tios.c_iflag));
-	obj->Set(NanNew<v8::String>("oflags"), NanNew<v8::Integer>(tios.c_oflag));
-	obj->Set(NanNew<v8::String>("cflags"), NanNew<v8::Integer>(tios.c_cflag));
-	obj->Set(NanNew<v8::String>("lflags"), NanNew<v8::Integer>(tios.c_lflag));
-	NanReturnValue(obj);
+		return Nan::ThrowError(strerror(errno));
+	v8::Handle<v8::Object> obj = Nan::New<v8::Object>();
+	obj->Set(Nan::New<v8::String>("iflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_iflag));
+	obj->Set(Nan::New<v8::String>("oflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_oflag));
+	obj->Set(Nan::New<v8::String>("cflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_cflag));
+	obj->Set(Nan::New<v8::String>("lflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_lflag));
+	info.GetReturnValue().Set(obj);
 }
 
 void Init(v8::Handle<v8::Object> exports) {
-	NODE_SET_METHOD(exports, "open", Open);
-	NODE_SET_METHOD(exports, "resize", Resize);
-	NODE_SET_METHOD(exports, "setattr", Setattr);
-	NODE_SET_METHOD(exports, "getattr", Getattr);
+	Nan::SetMethod(exports, "open", Open);
+	Nan::SetMethod(exports, "resize", Resize);
+	Nan::SetMethod(exports, "setattr", Setattr);
+	Nan::SetMethod(exports, "getattr", Getattr);
 
 	EXPORT_SYMBOL(exports, TCSANOW);
 	EXPORT_SYMBOL(exports, TCSADRAIN);
 	EXPORT_SYMBOL(exports, TCSAFLUSH);
 
-	v8::Handle<v8::Object> modes = NanNew<v8::Object>();
+	v8::Handle<v8::Object> modes = Nan::New<v8::Object>();
 
 	/* Input Modes */
 	EXPORT_SYMBOL(modes, IGNBRK);  /* ignore BREAK condition */
@@ -126,13 +126,13 @@ void Init(v8::Handle<v8::Object> exports) {
 	EXPORT_SYMBOL(modes, IXOFF);   /* enable input flow control */
 	EXPORT_SYMBOL(modes, IXANY);   /* any char will restart after stop */
 	EXPORT_SYMBOL(modes, IMAXBEL); /* ring bell on input queue full */
-	EXPORT_SYMBOL(modes, IUCLC);   /* translate upper case to lower case */
+	//EXPORT_SYMBOL(modes, IUCLC);   /* translate upper case to lower case */
 
 	/* Output Modes */
 	EXPORT_SYMBOL(modes, OPOST);   /* enable following output processing */
 	EXPORT_SYMBOL(modes, ONLCR);   /* map NL to CR-NL (ala CRMOD) */
 	EXPORT_SYMBOL(modes, OCRNL);   /* map CR to NL */
-	EXPORT_SYMBOL(modes, OLCUC);   /* translate lower case to upper case */
+	//EXPORT_SYMBOL(modes, OLCUC);   /* translate lower case to upper case */
 	EXPORT_SYMBOL(modes, ONOCR);   /* No CR output at column 0 */
 	EXPORT_SYMBOL(modes, ONLRET);  /* NL performs the CR function */
 
@@ -165,9 +165,9 @@ void Init(v8::Handle<v8::Object> exports) {
 	EXPORT_SYMBOL(modes, FLUSHO);  /* output being flushed (state) */
 	EXPORT_SYMBOL(modes, PENDIN);  /* XXX retype pending input (state) */
 	EXPORT_SYMBOL(modes, NOFLSH);  /* don't flush after interrupt */
-	EXPORT_SYMBOL(modes, XCASE);   /* canonical upper/lower case */
+	//EXPORT_SYMBOL(modes, XCASE);   /* canonical upper/lower case */
 
-	exports->Set(NanNew<v8::String>("modes"), modes);
+	exports->Set(Nan::New<v8::String>("modes").ToLocalChecked(), modes);
 }
 
 NODE_MODULE(pty, Init)
