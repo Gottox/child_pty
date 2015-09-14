@@ -85,6 +85,20 @@ describe('child_pty.spawn()', function(){
 		assert.equal(typeof child.stdout.ttyname, 'string');
 	});
 
+	it('should allow to open multiple terminals', function(done) {
+		var completed = 0, parallel = 100;
+		function complete() {
+			completed++;
+			if(completed === parallel)
+				done();
+		}
+
+		for(var i = 0; i < parallel; i++) {
+			var child = child_pty.spawn('sleep', [ '1' ]);
+			child.on('exit', complete);
+		}
+	});
+
 	afterEach(function(){
 		child.kill();
 	});
