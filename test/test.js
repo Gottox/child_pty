@@ -95,8 +95,19 @@ describe('child_pty.spawn()', function(){
 
 		for(var i = 0; i < parallel; i++) {
 			var child = child_pty.spawn('sleep', [ '1' ]);
+			child.stdin.write('Foobar');
 			child.on('exit', complete);
 		}
+	});
+
+	it('should emit "error" if executable doesn\'t exist', function(done) {
+		var nonexistent = 'This Does Not Exist';
+		child_pty.spawn(nonexistent, [1]).on('error', function(err) {
+			require('child_process').spawn(nonexistent, [1]).on('error', function(errReal) {
+				assert.deepEqual(err, errReal);
+				done();
+			});
+		});
 	});
 
 	afterEach(function(){
