@@ -1,5 +1,14 @@
 var assert = require('assert');
 var child_pty = require('../index');
+var readline = require('readline');
+var stream = require('stream');
+
+function lb(s) {
+	return readline.createInterface({
+		input: s,
+		output: new stream.Writable()
+	});
+}
 
 describe('child_pty.spawn()', function(){
 	var child;
@@ -21,12 +30,12 @@ describe('child_pty.spawn()', function(){
 		spawn_client('print');
 		var d = '';
 
-		child.stdout.on('data', function(data) {
+		lb(child.stdout).on('line', function(data) {
 			d += data.toString();
 		});
 
 		child.on('exit', function() {
-			assert.equal('print\r\n', d, 'should receive data');
+			assert.equal('print', d, 'should receive data');
 			done();
 		});
 	});
@@ -35,13 +44,13 @@ describe('child_pty.spawn()', function(){
 		spawn_client('echo');
 		var d;
 
-		child.stdout.on('data', function(data) {
+		lb(child.stdout).on('line', function(data) {
 			d = data;
 			child.kill();
 		});
 
 		child.on('exit', function() {
-			assert.equal('data\r\n', d, 'received data should be ok');
+			assert.equal('data', d, 'received data should be ok');
 			done();
 		});
 
@@ -66,11 +75,11 @@ describe('child_pty.spawn()', function(){
 	it('should send sigwinch on resize', function(done) {
 		spawn_client('print', 'echo', 'sigwinch');
 
-		child.stdout.once('data', function(data) {
-			assert.equal('print', data.toString().trim());
+		lb(child.stdout).once('line', function(data) {
+			assert.equal('print', data.toString());
 			child.stdout.resize({ columns:80, rows: 80 });
-			child.stdout.once('data', function(data) {
-				assert.equal('sigwinch '+this.columns+' '+this.rows+'\r\n', data.toString());
+			lb(child.stdout).once('line', function(data) {
+				assert.equal('sigwinch '+child.stdout.columns+' '+child.stdout.rows, data.toString());
 				child.kill();
 			});
 		});
