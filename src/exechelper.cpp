@@ -19,5 +19,6 @@ int main(int argc, char *argv[]) {
 	}
 	rv = htonl(errno);
 	write(statusFd, &rv, sizeof(errno));
+	read(statusFd + 1, &rv, sizeof(rv));
 	return EXIT_FAILURE;
 }
