@@ -65,3 +65,5 @@ Changelog
 * v0.5 - MacOS support
 * v1.0 - Exposes TTY name to the API
 * v1.1 - Exposes tcgetattr/tcsetattr functions; node-4.0 support
+* v2.0 - child_pty now emits the error event when a child can't be
+         spawned instead of printing an error to stdout.
