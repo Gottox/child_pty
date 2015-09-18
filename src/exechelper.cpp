@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
 	if(fcntl(statusFd, F_SETFD, fcntl(statusFd, F_GETFD) | FD_CLOEXEC) >= 0 &&
 			ioctl(STDIN_FILENO, TIOCSCTTY, NULL) >= 0) {
 		argc -= 2;
-		memmove(argv, argv+2, argc * sizeof(char*));
+		memmove(argv, argv + 2, argc * sizeof(char*));
 		argv[argc] = NULL;
 		execvp(argv[0], argv);
 	}
