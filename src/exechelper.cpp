@@ -10,7 +10,7 @@
 int main(int argc, char *argv[]) {
 	int rv, statusFd = atoi(argv[1]);
 
-	if(fcntl(statusFd, F_SETFD, fcntl(statusFd, F_GETFD) | FD_CLOEXEC) >= 0 &&
+	if (fcntl(statusFd, F_SETFD, fcntl(statusFd, F_GETFD) | FD_CLOEXEC) >= 0 &&
 			ioctl(STDIN_FILENO, TIOCSCTTY, NULL) >= 0) {
 		argc -= 2;
 		memmove(argv, argv + 2, argc * sizeof(char*));
