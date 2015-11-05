@@ -1,47 +1,56 @@
 [![Build Status](https://travis-ci.org/Gottox/child_pty.png)](https://travis-ci.org/Gottox/child_pty)
 
-child_pty
+child\_pty
 =========
 
-child_pty is a module for creating and interacting with pseudo terminals. It
+child\_pty is a module for creating and interacting with pseudo terminals. It
 tries to be as minimal as possible and borrows most of its functionality from
-child_process.
-
-child_pty was written as a replacement for [pty.js](https://github.com/chjj/pty.js/).
+child\_process.
 
 API
 ---
 
-It's mostly the same API
-[child_process](http://nodejs.org/api/child_process.html) with the following
-differences:
+See [child\_process](http://nodejs.org/api/child_process.html) with the following
+changes:
 
-* Only ```child_pty.spawn()``` is supported
+* Only `child_pty.spawn()` is supported
 
-* The ```options``` argument of child_pty.spawn() has the following changes:
-  * new field: ```options.columns```: columns of the instanciated PTY.
-  * new field: ```options.rows```: rows of the instanciated PTY.
-  * ```options.detached``` and ```options.stdio``` are ignored.
+### child\_pty.spawn()
 
-* ChildProcess in child_pty vs ChildProcess in child_process:
-  * ```#stderr``` is not available. Use ```#stdout``` instead.
+* options Argument:
+  * new field: `options.columns`: columns of the instanciated PTY.
+  * new field: `options.rows`: rows of the instanciated PTY.
+  * `options.detached` is ignored.
+  * `options.stdio` allows `'pty'` as array element. The value `'pty'`
+    indicates, that this fd is bound to the pty.
+  * `options.stdio` will default to `[ 'pty', 'pty', 'pty' ]
 
-  * There's ```#stdout.resize(size)``` to resize the underlying PTY.
+* `ChildProcess` in child\_pty vs `ChildProcess` in child\_process:
+  * new field: `#pty` points to a PtyRwStream that's associated
+    with the child processes pty.
+  * All file descriptors bound to the pty in the `#stdio` array point to the
+    the same object as `#pty`. This is also true for `#stdin` and
+    `#stdout`.
+  * If stderr is bound to the pty the field `#stderr` is a dummy Event
+    Emitter that will never emit any events.
+
+* PtyRwStream is a net.Socket with the following changes
+  * `#resize(size)`: resizes the underlying pty.
     The size attribute should have the following fields:
-    * ```size.columns```: columns of the instanciated PTY.
-    * ```size.rows```: rows of the instanciated PTY.
-
-  * There's a ``#stdout.ttyname`` property with the name of the tty (eg:
-    ``/dev/ttys016``)
-
-  * child processes won't get an EOF once you close stdin. You have to call
-    ```ChildProcess#kill()``` explicitly.
+    * `#size.columns`: columns of the instanciated PTY.
+    * `#size.rows`: rows of the instanciated PTY.
+  * `#ttyname`: property with the name of the tty (eg:
+    `/dev/ttys016`)
+  * due to the nature of PTYs it's neither possible to get 'end' events from
+    the underlying process nor will call `#end()` close the child processes
+    fd. To end the underlying process call `ChildProcess#kill('SIGHUP')`
+    instead.
 
 Examples
 --------
 
-This example opens a PTY with ```/bin/sh```, resizes the terminal, executes
-```ls -l```, and exits the shell.
+This example opens a PTY with `/bin/sh`, resizes the terminal, executes
+`ls -l`, and exits the shell.
 
 ```javascript
 var child_pty = require('child_pty');
@@ -60,10 +69,11 @@ Changelog
 
 * v0.1 - initial release
 * v0.2 - fix job control for shells
-* v0.3 - API changes to fit child_process
+* v0.3 - API changes to fit child\_process
 * v0.4 - remove deprecated APIs
 * v0.5 - MacOS support
 * v1.0 - Exposes TTY name to the API
 * v1.1 - Exposes tcgetattr/tcsetattr functions; node-4.0 support
-* v2.0 - child_pty now emits the error event when a child can't be
+* v2.0 - child\_pty now emits the error event when a child can't be
          spawned instead of printing an error to stdout.
+* v3.0 - child\_pty IO handling has been rewritten.
