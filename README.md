@@ -23,7 +23,7 @@ changes:
   * `options.detached` is ignored.
   * `options.stdio` allows `'pty'` as array element. The value `'pty'`
     indicates, that this fd is bound to the pty.
-  * `options.stdio` will default to `[ 'pty', 'pty', 'pty' ]
+  * `options.stdio` will default to `[ 'pty', 'pty', 'pty' ]`
 
 ### ChildProcess
 
