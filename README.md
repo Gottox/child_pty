@@ -45,6 +45,7 @@ changes:
     the underlying process nor will call `#end()` close the child processes
     fd. To end the underlying process call `ChildProcess#kill('SIGHUP')`
     instead.
+  * PtyRwStream will emit the `'end'` Event when the child process exits.
 
 Examples
 --------

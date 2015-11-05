@@ -117,6 +117,13 @@ describe('child_pty.spawn()', function(){
 		});
 	});
 
+	it('should close the pty when the child exits', function(done) {
+		var child = child_pty.spawn('/bin/true', []);
+		child.pty.on('end', function() {
+			done();
+		});
+	});
+
 	afterEach(function(){
 		child.kill();
 	});
