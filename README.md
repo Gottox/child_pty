@@ -48,9 +48,9 @@ PtyRwStream is a net.Socket with the following changes
 * `#ttyname`: property with the name of the tty (eg:
   `/dev/ttys016`)
 * due to the nature of PTYs it's neither possible to get 'end' events from
-  the underlying process nor will call `#end()` close the child processes
-  fd. To end the underlying process call `ChildProcess#kill('SIGHUP')`
-  instead.
+  the underlying process when it closes its pty file descriptors nor will call
+  `#end()` close the child processes file descriptor. To end the underlying
+  process call `ChildProcess#kill('SIGHUP')` instead.
 * PtyRwStream will emit the `'end'` Event when the child process exits.
 
 Examples
