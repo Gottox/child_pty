@@ -9,13 +9,13 @@
   "author": "Enno Boland <eb@s01.de>",
   "license": "MIT",
   "dependencies": {
-    "extend": "^2.0.0",
-    "nan": "^2.0.9"
+    "extend": "^3.0.0",
+    "nan": "^2.1.0"
   },
   "gypfile": true,
   "devDependencies": {
-    "jshint": "^2.5.10",
-    "mocha": "^2.0.1"
+    "jshint": "^2.8.0",
+    "mocha": "^2.3.3"
   },
   "repository": {
     "type": "git",
