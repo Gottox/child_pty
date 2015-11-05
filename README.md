@@ -25,27 +25,33 @@ changes:
     indicates, that this fd is bound to the pty.
   * `options.stdio` will default to `[ 'pty', 'pty', 'pty' ]
 
-* `ChildProcess` in child\_pty vs `ChildProcess` in child\_process:
-  * new field: `#pty` points to a PtyRwStream that's associated
-    with the child processes pty.
-  * All file descriptors bound to the pty in the `#stdio` array point to the
-    the same object as `#pty`. This is also true for `#stdin` and
-    `#stdout`.
-  * If stderr is bound to the pty the field `#stderr` is a dummy Event
-    Emitter that will never emit any events.
+### ChildProcess
 
-* PtyRwStream is a net.Socket with the following changes
-  * `#resize(size)`: resizes the underlying pty.
-    The size attribute should have the following fields:
-    * `#size.columns`: columns of the instanciated PTY.
-    * `#size.rows`: rows of the instanciated PTY.
-  * `#ttyname`: property with the name of the tty (eg:
-    `/dev/ttys016`)
-  * due to the nature of PTYs it's neither possible to get 'end' events from
-    the underlying process nor will call `#end()` close the child processes
-    fd. To end the underlying process call `ChildProcess#kill('SIGHUP')`
-    instead.
-  * PtyRwStream will emit the `'end'` Event when the child process exits.
+ChildProcess of child\_pty uses the same prototype as child\_process. Its
+instances differentiate in the following: 
+
+* new field: `#pty` points to a PtyRwStream that's associated
+  with the child processes pty.
+* All file descriptors are bound to the pty in the `#stdio` array point to the
+  the same object as `#pty`. This is also true for `#stdin` and
+  `#stdout`.
+* If stderr is bound to the pty the field `#stderr` is a dummy Event
+  Emitter that will never emit any events.
+
+### PtyRwStream
+
+PtyRwStream is a net.Socket with the following changes
+* `#resize(size)`: resizes the underlying pty.
+  The size attribute should have the following fields:
+  * `#size.columns`: columns of the instanciated PTY.
+  * `#size.rows`: rows of the instanciated PTY.
+* `#ttyname`: property with the name of the tty (eg:
+  `/dev/ttys016`)
+* due to the nature of PTYs it's neither possible to get 'end' events from
+  the underlying process nor will call `#end()` close the child processes
+  fd. To end the underlying process call `ChildProcess#kill('SIGHUP')`
+  instead.
+* PtyRwStream will emit the `'end'` Event when the child process exits.
 
 Examples
 --------
