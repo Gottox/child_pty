@@ -1,6 +1,6 @@
 {
   "name": "child_pty",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "provides a child_process.spawn()-like interface with pty support.",
   "main": "index.js",
   "scripts": {
