@@ -82,5 +82,7 @@ Changelog
 * v1.0 - Exposes TTY name to the API
 * v1.1 - Exposes tcgetattr/tcsetattr functions; node-4.0 support
 * v2.0 - child\_pty now emits the error event when a child can't be
-         spawned instead of printing an error to stdout.
+  spawned instead of printing an error to stdout.
 * v3.0 - child\_pty IO handling has been rewritten.
+  the end event is emitted on the pty when the child program exits.
+  all fds opened on the pty point to the same Stream instance.
