@@ -75,13 +75,17 @@ NAN_METHOD(Open) {
 NAN_METHOD(Setattr) {
 	struct termios tios;
 	Nan::HandleScope scope;
+	bzero(&tios, sizeof(struct termios));
 	v8::Local<v8::Object> obj = info[2]->ToObject();
-	tios.c_iflag = obj->Get(Nan::New<v8::String>("iflags").ToLocalChecked())->Uint32Value();
-	tios.c_oflag = obj->Get(Nan::New<v8::String>("oflags").ToLocalChecked())->Uint32Value();
-	tios.c_cflag = obj->Get(Nan::New<v8::String>("cflags").ToLocalChecked())->Uint32Value();
-	tios.c_lflag = obj->Get(Nan::New<v8::String>("lflags").ToLocalChecked())->Uint32Value();
-	if(tcsetattr(info[0]->ToObject()->Get(Nan::New<v8::String>("master_fd").ToLocalChecked())->Uint32Value(),
-				info[1]->Uint32Value(), &tios) < 0)
+	if(obj->Has(Nan::New<v8::String>("iflag").ToLocalChecked()))
+		tios.c_iflag = obj->Get(Nan::New<v8::String>("iflag").ToLocalChecked())->Uint32Value();
+	if(obj->Has(Nan::New<v8::String>("oflag").ToLocalChecked()))
+		tios.c_oflag = obj->Get(Nan::New<v8::String>("oflag").ToLocalChecked())->Uint32Value();
+	if(obj->Has(Nan::New<v8::String>("cflag").ToLocalChecked()))
+		tios.c_cflag = obj->Get(Nan::New<v8::String>("cflag").ToLocalChecked())->Uint32Value();
+	if(obj->Has(Nan::New<v8::String>("lflag").ToLocalChecked()))
+		tios.c_lflag = obj->Get(Nan::New<v8::String>("lflag").ToLocalChecked())->Uint32Value();
+	if(tcsetattr(info[0]->Uint32Value(), info[1]->Uint32Value(), &tios) < 0)
 		return Nan::ThrowError(strerror(errno));
 	return;
 }
@@ -89,18 +93,19 @@ NAN_METHOD(Setattr) {
 NAN_METHOD(Getattr) {
 	struct termios tios;
 	Nan::HandleScope scope;
-	if(tcgetattr(info[0]->ToObject()->Get(Nan::New<v8::String>("master_fd").ToLocalChecked())->Uint32Value(),
-				&tios) < 0)
+	if(tcgetattr(info[0]->Uint32Value(), &tios) < 0)
 		return Nan::ThrowError(strerror(errno));
 	v8::Local<v8::Object> obj = Nan::New<v8::Object>();
-	obj->Set(Nan::New<v8::String>("iflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_iflag));
-	obj->Set(Nan::New<v8::String>("oflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_oflag));
-	obj->Set(Nan::New<v8::String>("cflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_cflag));
-	obj->Set(Nan::New<v8::String>("lflags").ToLocalChecked(), Nan::New<v8::Number>(tios.c_lflag));
+	obj->Set(Nan::New<v8::String>("iflag").ToLocalChecked(), Nan::New<v8::Number>(tios.c_iflag));
+	obj->Set(Nan::New<v8::String>("oflag").ToLocalChecked(), Nan::New<v8::Number>(tios.c_oflag));
+	obj->Set(Nan::New<v8::String>("cflag").ToLocalChecked(), Nan::New<v8::Number>(tios.c_cflag));
+	obj->Set(Nan::New<v8::String>("lflag").ToLocalChecked(), Nan::New<v8::Number>(tios.c_lflag));
 	info.GetReturnValue().Set(obj);
 }
 
 void Init(v8::Handle<v8::Object> exports) {
+	v8::Handle<v8::Object> modes;
+
 	Nan::SetMethod(exports, "open", Open);
 	Nan::SetMethod(exports, "resize", Resize);
 	Nan::SetMethod(exports, "setattr", Setattr);
@@ -110,9 +115,8 @@ void Init(v8::Handle<v8::Object> exports) {
 	EXPORT_SYMBOL(exports, TCSADRAIN);
 	EXPORT_SYMBOL(exports, TCSAFLUSH);
 
-	v8::Handle<v8::Object> modes = Nan::New<v8::Object>();
-
 	/* Input Modes */
+	modes = Nan::New<v8::Object>();
 	EXPORT_SYMBOL(modes, IGNBRK);  /* ignore BREAK condition */
 	EXPORT_SYMBOL(modes, BRKINT);  /* map BREAK to SIGINT */
 	EXPORT_SYMBOL(modes, IGNPAR);  /* ignore (discard) parity errors */
@@ -127,16 +131,20 @@ void Init(v8::Handle<v8::Object> exports) {
 	EXPORT_SYMBOL(modes, IXANY);   /* any char will restart after stop */
 	EXPORT_SYMBOL(modes, IMAXBEL); /* ring bell on input queue full */
 	//EXPORT_SYMBOL(modes, IUCLC);   /* translate upper case to lower case */
+	exports->Set(Nan::New<v8::String>("iflag").ToLocalChecked(), modes);
 
 	/* Output Modes */
+	modes = Nan::New<v8::Object>();
 	EXPORT_SYMBOL(modes, OPOST);   /* enable following output processing */
 	EXPORT_SYMBOL(modes, ONLCR);   /* map NL to CR-NL (ala CRMOD) */
 	EXPORT_SYMBOL(modes, OCRNL);   /* map CR to NL */
 	//EXPORT_SYMBOL(modes, OLCUC);   /* translate lower case to upper case */
 	EXPORT_SYMBOL(modes, ONOCR);   /* No CR output at column 0 */
 	EXPORT_SYMBOL(modes, ONLRET);  /* NL performs the CR function */
+	exports->Set(Nan::New<v8::String>("oflag").ToLocalChecked(), modes);
 
 	/* Control Modes */
+	modes = Nan::New<v8::Object>();
 	EXPORT_SYMBOL(modes, CSIZE);   /* character size mask */
 	EXPORT_SYMBOL(modes, CS5);     /* 5 bits (pseudo) */
 	EXPORT_SYMBOL(modes, CS6);     /* 6 bits */
@@ -148,8 +156,10 @@ void Init(v8::Handle<v8::Object> exports) {
 	EXPORT_SYMBOL(modes, PARODD);  /* odd parity, else even */
 	EXPORT_SYMBOL(modes, HUPCL);   /* hang up on last close */
 	EXPORT_SYMBOL(modes, CLOCAL);  /* ignore modem status lines */
+	exports->Set(Nan::New<v8::String>("cflag").ToLocalChecked(), modes);
 
 	/* Local Modes */
+	modes = Nan::New<v8::Object>();
 	EXPORT_SYMBOL(modes, ECHOKE);  /* visual erase for line kill */
 	EXPORT_SYMBOL(modes, ECHOE);   /* visually erase chars */
 	EXPORT_SYMBOL(modes, ECHOK);   /* echo NL after line kill */
@@ -166,8 +176,7 @@ void Init(v8::Handle<v8::Object> exports) {
 	EXPORT_SYMBOL(modes, PENDIN);  /* XXX retype pending input (state) */
 	EXPORT_SYMBOL(modes, NOFLSH);  /* don't flush after interrupt */
 	//EXPORT_SYMBOL(modes, XCASE);   /* canonical upper/lower case */
-
-	exports->Set(Nan::New<v8::String>("modes").ToLocalChecked(), modes);
+	exports->Set(Nan::New<v8::String>("lflag").ToLocalChecked(), modes);
 }
 
 NODE_MODULE(pty, Init)
