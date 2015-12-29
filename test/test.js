@@ -118,7 +118,7 @@ describe('child_pty.spawn()', function(){
 	});
 
 	it('should close the pty when the child exits', function(done) {
-		var child = child_pty.spawn('/bin/true', []);
+		var child = child_pty.spawn('/bin/echo', ['200']);
 		child.pty.on('end', function() {
 			done();
 		});
