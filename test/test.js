@@ -124,6 +124,29 @@ describe('child_pty.spawn()', function(){
 		});
 	});
 
+	it('does not deadlock if piped in a row', function(done) {
+		var completed = 0, parallel = 20, childs = [];
+		function complete() {
+			completed++;
+			if(completed === parallel)
+				done();
+		}
+
+		for(var i = 0, child; i < parallel; i++) {
+			child = child_pty.spawn('/bin/cat');
+			child.on('exit', complete);
+			childs.push(child);
+			if(i)
+				childs[i-1].stdout.pipe(child.stdin);
+		}
+		childs[0].stdin.write('test\n');
+		childs[childs.length-1].stdout.on('data', function(data) {
+			for(var i = 0, child; i < parallel; i++) {
+				childs[i].kill();
+			}
+		});
+	});
+
 	afterEach(function(){
 		child.kill();
 	});
