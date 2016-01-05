@@ -140,8 +140,8 @@ describe('child_pty.spawn()', function(){
 				childs[i-1].stdout.pipe(child.stdin);
 		}
 		childs[0].stdin.write('test\n');
-		childs[childs.length-1].stdout.on('data', function(data) {
-			for(var i = 0, child; i < parallel; i++) {
+		childs[childs.length-1].stdout.on('data', function() {
+			for(var i = 0; i < parallel; i++) {
 				childs[i].kill();
 			}
 		});
