@@ -10,7 +10,7 @@
 int main(int argc, char *argv[]) {
 	int state_fd;
 	uint32_t rv;
-	
+
 	if(argc < 4)
 		return EXIT_FAILURE;
 	int master_fd = atoi(argv[2]);
