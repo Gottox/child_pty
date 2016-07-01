@@ -147,6 +147,12 @@ describe('child_pty.spawn()', function(){
 		});
 	});
 
+	it('closes the underlying process on exit', function(done) {
+		var child = child_pty.spawn('/bin/cat', '-');
+		child.pty.destroy();
+		child.on('exit', done);
+	});
+
 	afterEach(function(){
 		child.kill();
 	});
