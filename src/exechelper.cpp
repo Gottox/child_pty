@@ -11,13 +11,15 @@ int main(int argc, char *argv[]) {
 	int state_fd;
 	uint32_t rv;
 
-	if(argc < 3)
+	if(argc < 4)
 		return EXIT_FAILURE;
+	int master_fd = atoi(argv[2]);
 	state_fd = atoi(argv[1]);
-	if (fcntl(state_fd, F_SETFD, fcntl(state_fd, F_GETFD) | FD_CLOEXEC) >= 0 &&
+	if (fcntl(master_fd, F_SETFD, fcntl(master_fd, F_GETFD) | FD_CLOEXEC) >= 0 &&
+			fcntl(state_fd, F_SETFD, fcntl(state_fd, F_GETFD) | FD_CLOEXEC) >= 0 &&
 			ioctl(STDIN_FILENO, TIOCSCTTY, NULL) >= 0) {
-		argc -= 2;
-		memmove(argv, argv + 2, argc * sizeof(char*));
+		argc -= 3;
+		memmove(argv, argv + 3, argc * sizeof(char*));
 		argv[argc] = NULL;
 		execvp(argv[0], argv);
 	}
