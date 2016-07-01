@@ -20,6 +20,10 @@ changes:
 * options fields:
   * new field: `options.columns`: columns of the instanciated PTY.
   * new field: `options.rows`: rows of the instanciated PTY.
+  * new field: `options.ptyInit` should contain a function that will be
+    called before after the pty is created. This allows to set terminal
+    parameters using tools like
+    [node-termios](https://github.com/Gottox/node-termios).
   * `options.detached` is ignored.
   * `options.stdio` allows `'pty'` as array element. The value `'pty'`
     indicates, that this fd is bound to the pty.
@@ -47,22 +51,6 @@ PtyRwStream is a net.Socket with the following changes
   * `#size.rows`: rows of the instanciated PTY.
 * `#ttyname`: property with the name of the tty (eg:
   `/dev/ttys016`)
-* `setattr(attr)`: sets terminal attributes. `attr` may be an object containing
-  one or more of the following fields:
-  * `iflag`: input modes
-  * `oflag`: output modes
-  * `cflag`: control modes
-  * `lflag`: local modes
-  for further explainations on the allowed values consider the `termios(3)`
-  manpage.
-* `getattr(attr)`: sets terminal attributes. `attr` may be an object containing
-  one or more of the following fields:
-  * `iflag`: input modes
-  * `oflag`: output modes
-  * `cflag`: control modes
-  * `lflag`: local modes
-  for further explainations on the allowed values consider the `termios(3)`
-  manpage.
 * due to the nature of PTYs it's neither possible to get 'end' events from
   the underlying process when it closes its pty file descriptors nor will call
   `#end()` close the child processes file descriptor. To end the underlying
