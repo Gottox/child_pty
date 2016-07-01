@@ -17,7 +17,7 @@ changes:
 
 ### child\_pty.spawn()
 
-* options Argument:
+* options fields:
   * new field: `options.columns`: columns of the instanciated PTY.
   * new field: `options.rows`: rows of the instanciated PTY.
   * `options.detached` is ignored.
@@ -35,7 +35,7 @@ instances differentiate in the following:
 * All file descriptors are bound to the pty in the `#stdio` array point to the
   the same object as `#pty`. This is also true for `#stdin` and
   `#stdout`.
-* If stderr is bound to the pty the field `#stderr` is a dummy Event
+* If stderr is bound to the pty the field `#stderr` will be a dummy Event
   Emitter that will never emit any events.
 
 ### PtyRwStream
