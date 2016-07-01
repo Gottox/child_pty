@@ -8,13 +8,13 @@
 #include <arpa/inet.h>
 
 int main(int argc, char *argv[]) {
-	int state_fd;
+	int master_fd, state_fd;
 	uint32_t rv;
 
 	if(argc < 4)
 		return EXIT_FAILURE;
-	int master_fd = atoi(argv[2]);
 	state_fd = atoi(argv[1]);
+	master_fd = atoi(argv[2]);
 	if (fcntl(state_fd, F_SETFD, fcntl(state_fd, F_GETFD) | FD_CLOEXEC) >= 0 &&
 			ioctl(STDIN_FILENO, TIOCSCTTY, NULL) >= 0 &&
 			close(master_fd) >= 0) {
