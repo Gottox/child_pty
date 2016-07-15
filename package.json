@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "extend": "^3.0.0",
-    "nan": "^2.3.5",
+    "nan": "^2.4.0",
     "termios": "^0.1.1"
   },
   "gypfile": true,
