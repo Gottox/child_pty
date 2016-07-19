@@ -15,26 +15,27 @@
 			'sources': [ '<(SRCPATH)/pty.cpp' ],
 			'default_configuration': 'Release',
 			'include_dirs' : [
-				'<!(node -e \'require("nan")\')'
-			],
-			'libraries': [
-				'-lutil',
+				"<!(node -e \"require('nan')\")"
 			],
 			'conditions': [
 				['OS=="win"', {
 					'dependencies': [
-						'<(SRCPATH)/winpty/src/winpty.gyp:winpty',
-					],
+						'<(SRCPATH)/winpty/src/winpty.gyp:winpty'
+					]
+				}, {
+					'libraries': [
+						'-lutil',
+					]
 				}]
 			]
-		},{
+		}, {
 			'target_name': 'exechelper',
 			'type': 'executable',
 			'sources': [ '<(SRCPATH)/exechelper.cpp', ],
 			'conditions': [
 				['OS=="win"', {
 					'dependencies': [
-						'<(SRCPATH)/winpty/src/winpty.gyp:winpty',
+						'<(SRCPATH)/winpty/src/winpty.gyp:winpty'
 					],
 				}]
 			]
