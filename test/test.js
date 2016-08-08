@@ -119,9 +119,7 @@ describe('child_pty.spawn()', function(){
 
 	it('should close the pty when the child exits', function(done) {
 		var child = child_pty.spawn('/bin/echo', ['200']);
-		child.pty.on('end', function() {
-			done();
-		});
+		child.pty.on('end', done);
 	});
 
 	it('does not deadlock if piped in a row', function(done) {
@@ -151,6 +149,20 @@ describe('child_pty.spawn()', function(){
 		var child = child_pty.spawn('/bin/cat', '-');
 		child.pty.destroy();
 		child.on('exit', done);
+	});
+
+	it('should allow CTRL-C', function(done) {
+		var child = child_pty.spawn('/bin/sh');
+		// Waiting for prompt
+		child.stdout.once('data', function(prompt1) {
+			child.stdin.write('\x03');
+
+			// Waiting for prompt again
+			child.stdout.on('data', function(prompt2) {
+				if(prompt2.toString().indexOf(prompt1.toString().trim()) !== -1)
+					done();
+			});
+		});
 	});
 
 	afterEach(function(){
