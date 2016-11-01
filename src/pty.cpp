@@ -20,10 +20,8 @@
 #	include <libutil.h>
 #endif
 
-#define EXPORT_SYMBOL(o, s) o->Set(Nan::New<v8::String>(#s).ToLocalChecked(), Nan::New<v8::Number>(s));
-
 static void
-makews(struct winsize *w, v8::Handle<v8::Value> size) {
+v8tows(struct winsize *w, v8::Handle<v8::Value> size) {
 	v8::Handle<v8::String> columns = Nan::New<v8::String>("columns").ToLocalChecked(),
 		rows = Nan::New<v8::String>("rows").ToLocalChecked();
 	w->ws_row = 24;
@@ -39,19 +37,19 @@ makews(struct winsize *w, v8::Handle<v8::Value> size) {
 }
 
 static void
-applyws(struct winsize *w, v8::Handle<v8::Object> obj) {
+wstov8(v8::Handle<v8::Object> obj, struct winsize *w) {
 	obj->Set(Nan::New<v8::String>("rows").ToLocalChecked(), Nan::New<v8::Integer>(w->ws_row));
 	obj->Set(Nan::New<v8::String>("columns").ToLocalChecked(), Nan::New<v8::Integer>(w->ws_col));
 }
 
 NAN_METHOD(Resize) {
-	struct winsize w;
 	Nan::HandleScope scope;
-	makews(&w, info[1]);
+	struct winsize w;
+	v8tows(&w, info[1]);
 	v8::Handle<v8::Object> obj = info[0]->ToObject();
 	if(ioctl(obj->Get(Nan::New<v8::String>("master_fd").ToLocalChecked())->Uint32Value(), TIOCSWINSZ, &w) < 0)
 		return Nan::ThrowError(strerror(errno));
-	applyws(&w, obj);
+	wstov8(obj, &w);
 	return;
 }
 
@@ -61,14 +59,14 @@ NAN_METHOD(Open) {
 	char *tty;
 	Nan::HandleScope scope;
 	v8::Local<v8::Object> obj = Nan::New<v8::Object>();
-	makews(&w, info[0]);
+	v8tows(&w, info[0]);
 	if(openpty(&master, &slave, NULL, NULL, &w) < 0 ||
 			(tty = ttyname(slave)) == NULL)
 		return Nan::ThrowError(strerror(errno));
 	obj->Set(Nan::New<v8::String>("ttyname").ToLocalChecked(), Nan::New<v8::String>(tty).ToLocalChecked());
 	obj->Set(Nan::New<v8::String>("master_fd").ToLocalChecked(), Nan::New<v8::Integer>(master));
 	obj->Set(Nan::New<v8::String>("slave_fd").ToLocalChecked(), Nan::New<v8::Integer>(slave));
-	applyws(&w, obj);
+	wstov8(obj, &w);
 	info.GetReturnValue().Set(obj);
 }
 
