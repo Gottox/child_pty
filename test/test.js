@@ -123,7 +123,7 @@ describe('child_pty.spawn()', function(){
 	});
 
 	it('does not deadlock if piped in a row', function(done) {
-		var completed = 0, parallel = 20, childs = [];
+		var completed = 0, parallel = 10, childs = [];
 		function complete() {
 			completed++;
 			if(completed === parallel)
@@ -163,6 +163,19 @@ describe('child_pty.spawn()', function(){
 					done();
 			});
 		});
+	});
+
+	it('should emit exit only once', function(done) {
+		var child = child_pty.spawn('/bin/sh');
+		var endevent = 0;
+		child.stdin.on('end', function() {
+			endevent++;
+		});
+		child.stdin.write('exit\r\n');
+		setTimeout(function() {
+			assert.equal(endevent, 1, 'end event should be emitted once.');
+			done();
+		}, 1500);
 	});
 
 	afterEach(function(){
