@@ -1,4 +1,3 @@
-#include <nan.h>
 #include <errno.h>
 #if   defined(__linux)
 #	include <pty.h>
@@ -19,6 +18,8 @@
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
 #	include <libutil.h>
 #endif
+
+#include "../pty_common.h"
 
 static void
 v8tows(struct winsize *w, v8::Handle<v8::Value> size) {
@@ -70,4 +71,3 @@ NAN_METHOD(Open) {
 	info.GetReturnValue().Set(obj);
 }
 
-#include "../pty_common.h"
