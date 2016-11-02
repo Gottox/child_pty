@@ -21,36 +21,15 @@
 
 #include "../pty_common.h"
 
-static void
-v8tows(struct winsize *w, v8::Handle<v8::Value> size) {
-	v8::Handle<v8::String> columns = Nan::New<v8::String>("columns").ToLocalChecked(),
-		rows = Nan::New<v8::String>("rows").ToLocalChecked();
-	w->ws_row = 24;
-	w->ws_col = 80;
-	w->ws_xpixel = w->ws_ypixel = 0;
-	if(size->IsObject()) {
-		v8::Handle<v8::Object> obj = size->ToObject();
-		if(obj->Has(columns))
-			w->ws_col = obj->Get(columns)->Uint32Value();
-		if(obj->Has(rows))
-			w->ws_row = obj->Get(rows)->Uint32Value();
-	}
-}
-
-static void
-wstov8(v8::Handle<v8::Object> obj, struct winsize *w) {
-	obj->Set(Nan::New<v8::String>("rows").ToLocalChecked(), Nan::New<v8::Integer>(w->ws_row));
-	obj->Set(Nan::New<v8::String>("columns").ToLocalChecked(), Nan::New<v8::Integer>(w->ws_col));
-}
-
 NAN_METHOD(Resize) {
 	Nan::HandleScope scope;
 	struct winsize w;
-	v8tows(&w, info[1]);
+	memset(&w, 0, sizeof w);
+	v8tows(&w.ws_row, &w.ws_col, info[1]);
 	v8::Handle<v8::Object> obj = info[0]->ToObject();
 	if(ioctl(obj->Get(Nan::New<v8::String>("master_fd").ToLocalChecked())->Uint32Value(), TIOCSWINSZ, &w) < 0)
 		return Nan::ThrowError(strerror(errno));
-	wstov8(obj, &w);
+	wstov8(obj, w.ws_row, w.ws_col);
 	return;
 }
 
@@ -59,15 +38,16 @@ NAN_METHOD(Open) {
 	struct winsize w;
 	int master, slave;
 	char *tty;
+	memset(&w, 0, sizeof w);
 	v8::Local<v8::Object> obj = Nan::New<v8::Object>();
-	v8tows(&w, info[0]);
+	v8tows(&w.ws_row, &w.ws_col, info[0]);
 	if(openpty(&master, &slave, NULL, NULL, &w) < 0 ||
 			(tty = ttyname(slave)) == NULL)
 		return Nan::ThrowError(strerror(errno));
 	obj->Set(Nan::New<v8::String>("ttyname").ToLocalChecked(), Nan::New<v8::String>(tty).ToLocalChecked());
 	obj->Set(Nan::New<v8::String>("master_fd").ToLocalChecked(), Nan::New<v8::Integer>(master));
 	obj->Set(Nan::New<v8::String>("slave_fd").ToLocalChecked(), Nan::New<v8::Integer>(slave));
-	wstov8(obj, &w);
+	wstov8(obj, w.ws_row, w.ws_col);
 	info.GetReturnValue().Set(obj);
 }
 
