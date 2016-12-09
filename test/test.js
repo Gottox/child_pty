@@ -178,6 +178,11 @@ describe('child_pty.spawn()', function(){
 		}, 1500);
 	});
 
+	it('should allow pipes as stdin (#22)', function(done) {
+		var child = child_pty.spawn('/bin/echo', 'abc', { stdio: ['pipe', 'pty', 'pty'] });
+		child.on('exit', done);
+	});
+
 	afterEach(function(){
 		child.kill();
 	});
