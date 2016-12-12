@@ -1,6 +1,6 @@
 {
   "name": "child_pty",
-  "version": "3.0.1",
+  "version": "3.0.4",
   "description": "provides a child_process.spawn()-like interface with pty support.",
   "main": "index.js",
   "scripts": {
@@ -10,12 +10,13 @@
   "license": "MIT",
   "dependencies": {
     "extend": "^3.0.0",
-    "nan": "^2.1.0"
+    "nan": "^2.4.0",
+    "termios": "^0.1.1"
   },
   "gypfile": true,
   "devDependencies": {
-    "jshint": "^2.8.0",
-    "mocha": "^2.3.3"
+    "jshint": "^2.9.2",
+    "mocha": "^2.5.3"
   },
   "repository": {
     "type": "git",

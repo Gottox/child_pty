@@ -17,7 +17,7 @@ changes:
 
 ### child\_pty.spawn()
 
-* options Argument:
+* options fields:
   * new field: `options.columns`: columns of the instanciated PTY.
   * new field: `options.rows`: rows of the instanciated PTY.
   * `options.detached` is ignored.
@@ -35,7 +35,7 @@ instances differentiate in the following:
 * All file descriptors are bound to the pty in the `#stdio` array point to the
   the same object as `#pty`. This is also true for `#stdin` and
   `#stdout`.
-* If stderr is bound to the pty the field `#stderr` is a dummy Event
+* If stderr is bound to the pty the field `#stderr` will be a dummy Event
   Emitter that will never emit any events.
 
 ### PtyRwStream
@@ -47,11 +47,29 @@ PtyRwStream is a net.Socket with the following changes
   * `#size.rows`: rows of the instanciated PTY.
 * `#ttyname`: property with the name of the tty (eg:
   `/dev/ttys016`)
+* `setattr(attr)`: sets terminal attributes. `attr` may be an object containing
+  one or more of the following fields:
+  * `iflag`: input modes
+  * `oflag`: output modes
+  * `cflag`: control modes
+  * `lflag`: local modes
+  for further explainations on the allowed values consider the `termios(3)`
+  manpage.
+* `getattr(attr)`: sets terminal attributes. `attr` may be an object containing
+  one or more of the following fields:
+  * `iflag`: input modes
+  * `oflag`: output modes
+  * `cflag`: control modes
+  * `lflag`: local modes
+  for further explainations on the allowed values consider the `termios(3)`
+  manpage.
 * due to the nature of PTYs it's neither possible to get 'end' events from
   the underlying process when it closes its pty file descriptors nor will call
   `#end()` close the child processes file descriptor. To end the underlying
   process call `ChildProcess#kill('SIGHUP')` instead.
-* PtyRwStream will emit the `'end'` Event when the child process exits.
+* PtyRwStream will emit the `'end'` Event when the child process exits. It
+  will *not* emit the `'end'` event if the child process closes its slave file
+  descriptor. See above.
 
 Examples
 --------
