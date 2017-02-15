@@ -6,6 +6,7 @@
 #	include <termios.h>
 #elif defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
 #	include <sys/ioctl.h>
+#	include <unistd.h>
 /*
  * from pty.js:
  * From node v0.10.28 (at least?) there is also a "util.h" in node/src,
@@ -19,8 +20,6 @@
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
 #	include <libutil.h>
 #endif
-
-#define EXPORT_SYMBOL(o, s) o->Set(Nan::New<v8::String>(#s).ToLocalChecked(), Nan::New<v8::Number>(s));
 
 static void
 makews(struct winsize *w, v8::Handle<v8::Value> size) {
