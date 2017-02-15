@@ -6,6 +6,7 @@
 #	include <termios.h>
 #elif defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
 #	include <sys/ioctl.h>
+#	include <unistd.h>
 /*
  * from pty.js:
  * From node v0.10.28 (at least?) there is also a "util.h" in node/src,
