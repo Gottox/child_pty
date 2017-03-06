@@ -20,6 +20,8 @@
 #	include <libutil.h>
 #endif
 
+#include "../pty_common.h"
+
 NAN_METHOD(Resize) {
 	Nan::HandleScope scope;
 	struct winsize w;
