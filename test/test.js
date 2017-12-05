@@ -118,7 +118,7 @@ describe('child_pty.spawn()', function(){
 	});
 
 	it('should close the pty when the child exits', function(done) {
-		var child = child_pty.spawn('/bin/echo', ['200']);
+		child = child_pty.spawn('/bin/echo', ['200']);
 		child.pty.on('end', done);
 	});
 
@@ -146,13 +146,13 @@ describe('child_pty.spawn()', function(){
 	});
 
 	it('closes the underlying process on exit', function(done) {
-		var child = child_pty.spawn('/bin/cat', '-');
+		child = child_pty.spawn('/bin/cat', '-');
 		child.pty.destroy();
 		child.on('exit', done);
 	});
 
 	it('should allow CTRL-C', function(done) {
-		var child = child_pty.spawn('/bin/sh');
+		child = child_pty.spawn('/bin/sh');
 		// Waiting for prompt
 		child.stdout.once('data', function(prompt1) {
 			child.stdin.write('\x03');
@@ -166,7 +166,7 @@ describe('child_pty.spawn()', function(){
 	});
 
 	it('should emit exit only once', function(done) {
-		var child = child_pty.spawn('/bin/sh');
+		child = child_pty.spawn('/bin/sh');
 		var endevent = 0;
 		child.stdin.on('end', function() {
 			endevent++;
@@ -179,7 +179,7 @@ describe('child_pty.spawn()', function(){
 	});
 
 	it('should allow pipes as stdin (#22)', function(done) {
-		var child = child_pty.spawn('/bin/echo', 'abc', { stdio: ['pipe', 'pty', 'pty'] });
+		child = child_pty.spawn('/bin/echo', 'abc', { stdio: ['pipe', 'pty', 'pty'] });
 		child.on('exit', done);
 	});
 
