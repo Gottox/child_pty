@@ -3,6 +3,9 @@ var child_pty = require('../index');
 var readline = require('readline');
 var stream = require('stream');
 
+function write_cb(err) {
+	if(err) throw err;
+}
 function lb(s) {
 	return readline.createInterface({
 		input: s,
@@ -54,7 +57,7 @@ describe('child_pty.spawn()', function(){
 			done();
 		});
 
-		child.stdin.write('data\n');
+		child.stdin.write('data\n', write_cb);
 	});
 
 	it('should fire event on resize', function(done) {
@@ -104,7 +107,7 @@ describe('child_pty.spawn()', function(){
 
 		for(var i = 0; i < parallel; i++) {
 			var child = child_pty.spawn('sleep', [ '1' ]);
-			child.stdin.write('Foobar');
+			child.stdin.write('Foobar', write_cb);
 			child.on('exit', complete);
 		}
 	});
@@ -139,7 +142,7 @@ describe('child_pty.spawn()', function(){
 			if(i)
 				childs[i-1].stdout.pipe(child.stdin);
 		}
-		childs[0].stdin.write('test\n');
+		childs[0].stdin.write('test\n', write_cb);
 		childs[childs.length-1].stdout.on('data', function() {
 			for(var i = 0; i < parallel; i++) {
 				childs[i].kill();
