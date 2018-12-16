@@ -98,7 +98,7 @@ describe('child_pty.spawn()', function(){
 	});
 
 	it('should allow to open multiple terminals', function(done) {
-		var completed = 0, parallel = 100;
+		var completed = 0, parallel = 50;
 		function complete() {
 			completed++;
 			if(completed === parallel)
