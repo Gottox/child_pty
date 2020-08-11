@@ -22,33 +22,33 @@
 #endif
 
 static void
-v8tows(struct winsize *w, v8::Handle<v8::Value> size) {
-	v8::Handle<v8::String> columns = Nan::New<v8::String>("columns").ToLocalChecked(),
+v8tows(struct winsize *w, v8::Local<v8::Value> size) {
+	v8::Local<v8::String> columns = Nan::New<v8::String>("columns").ToLocalChecked(),
 		rows = Nan::New<v8::String>("rows").ToLocalChecked();
 	w->ws_row = 24;
 	w->ws_col = 80;
 	w->ws_xpixel = w->ws_ypixel = 0;
 	if(size->IsObject()) {
-		v8::Handle<v8::Object> obj = size->ToObject();
-		if(obj->Has(columns))
-			w->ws_col = obj->Get(columns)->Uint32Value();
-		if(obj->Has(rows))
-			w->ws_row = obj->Get(rows)->Uint32Value();
+		v8::Local<v8::Object> obj = Nan::To<v8::Object>(size).ToLocalChecked();
+		if(!Nan::Has(obj, columns).IsNothing())
+			w->ws_col = Nan::Get(obj, columns).ToLocalChecked()->ToUint32(Nan::GetCurrentContext()).ToLocalChecked()->Value();
+		if(!Nan::Has(obj, rows).IsNothing())
+			w->ws_row = Nan::Get(obj, rows).ToLocalChecked()->ToUint32(Nan::GetCurrentContext()).ToLocalChecked()->Value();
 	}
 }
 
 static void
-wstov8(v8::Handle<v8::Object> obj, struct winsize *w) {
-	obj->Set(Nan::New<v8::String>("rows").ToLocalChecked(), Nan::New<v8::Integer>(w->ws_row));
-	obj->Set(Nan::New<v8::String>("columns").ToLocalChecked(), Nan::New<v8::Integer>(w->ws_col));
+wstov8(v8::Local<v8::Object> obj, struct winsize *w) {
+	Nan::Set(obj, Nan::New<v8::String>("rows").ToLocalChecked(), Nan::New<v8::Integer>(w->ws_row));
+	Nan::Set(obj, Nan::New<v8::String>("columns").ToLocalChecked(), Nan::New<v8::Integer>(w->ws_col));
 }
 
 NAN_METHOD(Resize) {
 	Nan::HandleScope scope;
 	struct winsize w;
 	v8tows(&w, info[1]);
-	v8::Handle<v8::Object> obj = info[0]->ToObject();
-	if(ioctl(obj->Get(Nan::New<v8::String>("master_fd").ToLocalChecked())->Uint32Value(), TIOCSWINSZ, &w) < 0)
+	v8::Local<v8::Object> obj = Nan::To<v8::Object>(info[0]).ToLocalChecked();
+	if(ioctl(Nan::Get(obj, Nan::New<v8::String>("master_fd").ToLocalChecked()).ToLocalChecked()->ToUint32(Nan::GetCurrentContext()).ToLocalChecked()->Value(), TIOCSWINSZ, &w) < 0)
 		return Nan::ThrowError(strerror(errno));
 	wstov8(obj, &w);
 	return;
@@ -64,15 +64,15 @@ NAN_METHOD(Open) {
 	if(openpty(&master, &slave, NULL, NULL, &w) < 0 ||
 			(tty = ttyname(slave)) == NULL)
 		return Nan::ThrowError(strerror(errno));
-	obj->Set(Nan::New<v8::String>("ttyname").ToLocalChecked(), Nan::New<v8::String>(tty).ToLocalChecked());
-	obj->Set(Nan::New<v8::String>("master_fd").ToLocalChecked(), Nan::New<v8::Integer>(master));
-	obj->Set(Nan::New<v8::String>("slave_fd").ToLocalChecked(), Nan::New<v8::Integer>(slave));
+	Nan::Set(obj, Nan::New<v8::String>("ttyname").ToLocalChecked(), Nan::New<v8::String>(tty).ToLocalChecked());
+	Nan::Set(obj, Nan::New<v8::String>("master_fd").ToLocalChecked(), Nan::New<v8::Integer>(master));
+	Nan::Set(obj, Nan::New<v8::String>("slave_fd").ToLocalChecked(), Nan::New<v8::Integer>(slave));
 	wstov8(obj, &w);
 	info.GetReturnValue().Set(obj);
 }
 
-void Init(v8::Handle<v8::Object> exports) {
-	v8::Handle<v8::Object> modes;
+void Init(v8::Local<v8::Object> exports) {
+	v8::Local<v8::Object> modes;
 
 	Nan::SetMethod(exports, "open", Open);
 	Nan::SetMethod(exports, "resize", Resize);
